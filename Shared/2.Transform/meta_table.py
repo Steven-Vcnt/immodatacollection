@@ -4,14 +4,6 @@ FROM bronze.main_castorus mc
 LEFT JOIN bronze.castorus_change cc ON mc.id=cc.id
 LEFT JOIN silver.image_table it ON it.id=mc.id
 group by mc.id ''')
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT * FROM silver.meta_table where UpdateDateImage is not null
-
-# COMMAND ----------
-
 meta_table.createOrReplaceTempView('meta_table_updates')
 
 # COMMAND ----------

@@ -1,4 +1,10 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC apt-get update 
+# MAGIC apt install chromium-chromedriver -y
+
+# COMMAND ----------
+
 #before launching it got to terminal and install
 #!apt-get update 
 #!apt install chromium-chromedriver 
@@ -30,20 +36,26 @@ def bieniciImage(Provider, xpath, attribute):
     imgeDB=[]
     imagePath=[]
     i=0
+    imageLink='not available'
+    imageName='not available'
     for each in src:
-      SourceLink=each.get_attribute(attribute)
-      imgeDB.append(SourceLink)
-      ImageName= "dbfs:/FileStore/images/"+ id +"_"+ str(i)+".jpg"
-      imagePath.append(ImageName)
+      imageLink=each.get_attribute(attribute)
+      imgeDB.append(imageLink)
+      imageName= "dbfs:/FileStore/images/"+ id +"_"+ str(i)+".jpg"
+      imagePath.append(imageName)
       try:
-        urllib.request.urlretrieve(SourceLink, "/tmp/imageTempbi.jpg")
-        dbutils.fs.mv("file:/tmp/imageTempbi.jpg", ImageName)
+        urllib.request.urlretrieve(imageLink, "/tmp/imageTempbi.jpg")
+        dbutils.fs.mv("file:/tmp/imageTempbi.jpg", imageName)
       except:
         pass
       else:
         pass
-      #files.download(ImageName)
       i=i+1
+    if imageLink=='not available':
+      imgeDB.append(imageLink)
+      imagePath.append(imageName)
+    else:
+      pass
     imgeTable_temp['imageLink']=imgeDB
     imgeTable_temp['id']=id
     imgeTable_temp['imagePath']= imagePath
@@ -75,10 +87,12 @@ where SourceLink LIKE '%bienici%' and (UpdateDateImage is null OR UpdateDateImag
 
 # COMMAND ----------
 
-#bienici_apt=rem_dup_castorus[rem_dup_castorus.SourceLink.str.contains("bienici")].reset_index()
-bienicitable= bieniciImage(bienici_apt, "//div[@class='w']/img", "src")
-#Create SQL view
-sp_bienicitable=spark.createDataFrame(bienicitable).distinct().createOrReplaceTempView('bienici_image_updates')
+if len(bienici_apt) == 0:
+  dbutils.notebook.exit('Success')
+else:
+  bienicitable= bieniciImage(bienici_apt, "//div[@class='w']/img", "src")
+  #Create SQL view
+  sp_bienicitable=spark.createDataFrame(bienicitable).distinct().createOrReplaceTempView('bienici_image_updates')
 
 # COMMAND ----------
 

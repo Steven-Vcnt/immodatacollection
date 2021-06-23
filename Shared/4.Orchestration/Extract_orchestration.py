@@ -5,22 +5,25 @@ import sys
 
 #Run the notebook and get the path to the table
 #fetch the return value from the callee 001_TrainModel
-
-
-
-extract_maintTable= dbutils.notebook.run('/Shared/1.Extract/CastorusMainTable', 3600)
+source="/Repos/steven.vincentGNR@gmail.com/immodatacollection/"
+#Shared/4.Orchestration/Extract_orchestration
+inits=[source+'Shared/0.Global/instanciate_cluster', source+'Shared/1.Extract/CastorusMainTable']
+for init in inits:
+  extract_maintTable= dbutils.notebook.run(init, 3600)
 if extract_maintTable == 'Success':
-  extract_details_notebook=['/Shared/1.Extract/castorusChangeTable', 
-                            '/Shared/1.Extract/Exctract_bienici_image', '/Shared/1.Extract/Extract_Figaro_image']
+  extract_details_notebook=[source+'Shared/1.Extract/castorusChangeTable', 
+                            source+'Shared/1.Extract/Extract_bienici_image', 
+                            source+'Shared/1.Extract/Extract_figaro_image', 
+                            source+'Shared/1.Extract/Extract_avendrealouer_image']
   for each in extract_details_notebook:
     extract_details= dbutils.notebook.run(each, 3600)
     
   if extract_details == 'Success':
-    transform=['/Shared/2.Transform/main_table', '/Shared/2.Transform/image_table']
+    transform=[source+'Shared/2.Transform/main_table', source+'Shared/2.Transform/image_table']
     for transfo in transform:
       transform_mainTable = dbutils.notebook.run(transfo, 3600)
     if transform_mainTable == 'Success':
-      metaTable=dbutils.notebook.run('/Shared/2.Transform/main_table', 3600)
+      metaTable=dbutils.notebook.run(source+'Shared/2.Transform/meta_table', 3600)
       if metaTable == 'Success':
         print("Job ran successfully:", sys.exc_info()[0])
       else:

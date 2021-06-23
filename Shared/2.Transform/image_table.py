@@ -3,12 +3,9 @@ image_table=spark.sql('''
 SELECT * FROM  bronze.figaro_image 
 UNION ALL
 SELECT * FROM bronze.bienici_image
+UNION ALL
+SELECT * FROM bronze.aval_image
 ''').createOrReplaceTempView('image_table_updates')
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT DISTINCT ID FROM silver.image_table
 
 # COMMAND ----------
 

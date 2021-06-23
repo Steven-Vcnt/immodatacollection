@@ -13,34 +13,39 @@ import urllib.request
 
 #Get all change of the apt
 def getChange(Table):
-  i=0
   ChangeTable=pd.DataFrame()
-  for each in Table.iloc[:,0]:
-    try:    
-      i= i +1
-      #read URL and get html
-      html_change=pd.read_html(each, attrs = {'width': '98%'})
+  for link, id in zip(Table["Link"], Table["id"]):
+    df_change=pd.DataFrame()
+    #read URL and get html
+    try:
+      html_change=pd.read_html(link, attrs = {'width': '98%'})
       #convert from list to DF
-      df_change=pd.concat(html_change)
-      #Regex to get ID
-      id=re.search("(\w\d+)", each).group(0)
-      df_change['id']=id
-      df_change['UpdateDateChange'] = datetime.now()
-      ChangeTable=ChangeTable.append(df_change)
+      df_change=pd.concat(html_change) 
+      df_change['link']=link
+      df_change['id']=id 
+      df_change['UpdateDateChange'] = datetime.now() 
+      df_changes[0]=df_changes[0].astype(str)
     except:
-      pass
+      df_change=pd.DataFrame({0: ['1011999'], 1: ['not available' ],'id':[id], 'UpdateDateChange':[datetime.now()]  })
+    ChangeTable=ChangeTable.append(df_change)  
+    #Regex to get ID
+
   ChangeTable.rename(columns={0: 'Date_MDDYYYY', 1:'changeDescription'}, inplace=True)
-  print(str(i) + ' on ' + str(len(castorus)))
   return ChangeTable
 
 
 # COMMAND ----------
 
-castorus=spark.sql('''SELECT Link
+castorus=spark.sql('''SELECT Link, mt.id
 FROM silver.main_table mt
 LEFT JOIN silver.meta_table md ON md.id=mt.id
-where (UpdateDateChange is null OR UpdateDateChange < DATE_ADD(NOW(),-7)) ''').limit(100).toPandas()
-sp_Castorus = spark.createDataFrame(getChange(castorus)).distinct().createOrReplaceTempView('castorus_change_updates')
+where (UpdateDateChange is null OR UpdateDateChange < DATE_ADD(NOW(),-7)) ''').limit(1000).toPandas()
+if len(castorus) == 0:
+  dbutils.notebook.exit('Success')
+else:
+  pd_castorus=getChange(castorus)
+  sp_Castorus = spark.createDataFrame(pd_castorus)
+  sp_Castorus.distinct().createOrReplaceTempView('castorus_change_updates')
 
 # COMMAND ----------
 
