@@ -9,8 +9,8 @@ jobs:
     steps:
     - name: Write _netrc file
       run: |
-        printf "machine dbc-c5c9a496-51bc.cloud.databricks.com \n login token \n password dapib763fba9f479b4d891064359e37e4bc7" > "./_netrc"
+        printf "machine dbc-c5c9a496-51bc.cloud.databricks.com \n login token \n password dapib763fba9f479b4d891064359e37e4bc7" > ".\_netrc"
     - name: push to Uat
       run: |
-        curl --netrc-file ./_netrc -X PATCH https://dbc-c5c9a496-51bc.cloud.databricks.com/api/2.0/repos/640 -H "Content-Type: application/json" -H "Accept: application/json" -d "{"branch": "Uat"}" --ssl-no-revoke
+            curl --netrc-file .\_netrc -X PATCH https://dbc-c5c9a496-51bc.cloud.databricks.com/api/2.0/repos/640 -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"branch\": \"Uat\"}" --ssl-no-revoke
   
