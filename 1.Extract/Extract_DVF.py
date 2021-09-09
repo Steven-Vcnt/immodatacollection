@@ -44,8 +44,25 @@ sp_dvf_file = spark.read.format("csv").option("delimiter", "|").option("header",
 
 # COMMAND ----------
 
-sp_dvf_file.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/dvf_file") 
-spark.sql("CREATE TABLE IF NOT EXISTS bronze.dvf_file USING DELTA LOCATION '/FileStore/bronze/dvf_file'")
+  sp_dvf_file=sp_dvf_file.withColumnRenamed("Code service CH",'Code_service_CH')
+
+# COMMAND ----------
+
+from pyspark.sql import functions as F
+
+renamed_sp_dvf = sp_dvf_file.select([F.col(col).alias(col.replace(' ', '_')) for col in sp_dvf_file.columns])
+
+# COMMAND ----------
+
+#from pyspark.sql import functions as F
+#renamed_sp_dvf = sp_dvf_file.select([F.col(col).alias(col.replace(' ', '_')) for col in sp_dvf_file.columns])
+#renamed_sp_dvf.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/dvf_file") 
+#spark.sql("CREATE TABLE IF NOT EXISTS bronze.dvf_file USING DELTA LOCATION '/FileStore/bronze/dvf_file'")
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM bronze.dvf_file where Commune = 'LEVALLOIS-PERRET'-- ORDER BY `Date mutation` DESC
 
 # COMMAND ----------
 
