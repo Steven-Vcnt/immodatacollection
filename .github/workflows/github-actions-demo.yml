@@ -8,15 +8,9 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Write _netrc file
-      run: |
-        cd D:\a\immodatacollection\immodatacollection
-        ls
-        cd D:\a\immodatacollection\immodatacollection
-        ls
-    - name: Write _netrc file
       shell: cmd
       run: |
-        echo "machine dbc-c5c9a496-51bc.cloud.databricks.com \n login token \n password dapib763fba9f479b4d891064359e37e4bc7" > D:\a\immodatacollection\immodatacollection\_netrc
+        echo "machine dbc-c5c9a496-51bc.cloud.databricks.com \n login token \n password dapib763fba9f479b4d891064359e37e4bc7" > "D:\a\immodatacollection\immodatacollection\_netrc"
     - name: push to Uat
       shell: cmd
       run: |
