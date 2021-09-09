@@ -1,8 +1,8 @@
 name: GitHub Actions Demo
 on:
-  push:
+  pull_request:
     branches:
-    - Dev
+    - Uat
 jobs:
   Explore-GitHub-Actions:
     runs-on: windows-latest
