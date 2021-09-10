@@ -14,5 +14,5 @@ jobs:
     - name: push to master
       shell: cmd
       run: |
-            curl --netrc-file D:\a\immodatacollection\immodatacollection\_netrc -X PATCH https://dbc-c5c9a496-51bc.cloud.databricks.com/api/2.0/repos/640 -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"branch\": \"master\"}" --ssl-no-revoke
+            curl --netrc-file D:\a\immodatacollection\immodatacollection\_netrc -X PATCH https://dbc-c5c9a496-51bc.cloud.databricks.com/api/2.0/repos/733 -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"branch\": \"master\"}" --ssl-no-revoke
   
