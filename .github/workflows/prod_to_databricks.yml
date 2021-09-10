@@ -2,7 +2,7 @@ name: prod_to_databricks
 on:
   push:
     branches:
-    - Prod
+    - master
 jobs:
   prod_to_databricks:
     runs-on: windows-latest
