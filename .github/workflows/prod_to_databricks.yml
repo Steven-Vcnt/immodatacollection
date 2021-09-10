@@ -1,4 +1,4 @@
-name: GitHub Actions Demo
+name: prod_to_databricks
 on:
   push:
     branches:
