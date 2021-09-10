@@ -5,7 +5,7 @@ import sys
 
 #Run the notebook and get the path to the table
 #fetch the return value from the callee 001_TrainModel
-source="/Repos/steven.vincentGNR@gmail.com/immodatacollection/"
+source="/Repos/ImmoDataCollection/immodatacollection_uat/"
 #Shared/4.Orchestration/Extract_orchestration
 inits=[source+'0.Global/instanciate_cluster', source+'1.Extract/CastorusMainTable']
 for init in inits:
