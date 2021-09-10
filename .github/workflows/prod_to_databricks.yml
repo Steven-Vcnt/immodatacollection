@@ -4,15 +4,15 @@ on:
     branches:
     - Prod
 jobs:
-  Explore-GitHub-Actions:
+  prod_to_databricks:
     runs-on: windows-latest
     steps:
     - name: Write _netrc file
       shell: cmd
       run: |
         printf "machine dbc-c5c9a496-51bc.cloud.databricks.com \n login token \n password dapib763fba9f479b4d891064359e37e4bc7" > D:\a\immodatacollection\immodatacollection\_netrc
-    - name: push to Uat
+    - name: push to master
       shell: cmd
       run: |
-            curl --netrc-file D:\a\immodatacollection\immodatacollection\_netrc -X PATCH https://dbc-c5c9a496-51bc.cloud.databricks.com/api/2.0/repos/640 -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"branch\": \"Uat\"}" --ssl-no-revoke
+            curl --netrc-file D:\a\immodatacollection\immodatacollection\_netrc -X PATCH https://dbc-c5c9a496-51bc.cloud.databricks.com/api/2.0/repos/640 -H "Content-Type: application/json" -H "Accept: application/json" -d "{\"branch\": \"master\"}" --ssl-no-revoke
   
