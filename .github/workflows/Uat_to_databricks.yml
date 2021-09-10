@@ -4,7 +4,7 @@ on:
     branches:
     - Uat
 jobs:
-  Explore-GitHub-Actions:
+  Uat_to_databricks:
     runs-on: windows-latest
     steps:
     - name: Write _netrc file
