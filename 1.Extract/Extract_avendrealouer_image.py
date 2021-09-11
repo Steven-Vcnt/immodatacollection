@@ -26,12 +26,14 @@ def GetImageFromHtml(Provider, tag, classType):
     headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:63.0) Gecko/20100101 Firefox/63.0'}
     imgeTable_temp=pd.DataFrame()
     req= Request(link, headers=headers)
-    uClient= urlopen(req)
-    page_html= uClient.read()
-    uClient.close()
-    page_soup=BeautifulSoup(page_html, "html")
-    imgs = page_soup.find_all(tag, {'class': classType})
-    
+    try:
+      uClient= urlopen(req)
+      page_html= uClient.read()
+      uClient.close()
+      page_soup=BeautifulSoup(page_html, "html")
+      imgs = page_soup.find_all(tag, {'class': classType})
+    except:
+      imgs=[]
     i=0
     imgeDB=[]
     imagePath=[]
