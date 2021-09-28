@@ -12,6 +12,14 @@ import time
 import lxml
 import bs4.builder._lxml
 import lxml.etree
+from pyspark.sql import functions as F
+from pyspark.sql.functions import regexp_replace
+from pyspark.sql.types import FloatType
+
+# COMMAND ----------
+
+# MAGIC %sh
+# MAGIC rm -r /dbfs/FileStore/DVF_file
 
 # COMMAND ----------
 
@@ -41,45 +49,20 @@ for link in dvf_files:
 # COMMAND ----------
 
 sp_dvf_file = spark.read.format("csv").option("delimiter", "|").option("header", "true").load("/FileStore/DVF_file/*.txt")
-
-# COMMAND ----------
-
-  sp_dvf_file=sp_dvf_file.withColumnRenamed("Code service CH",'Code_service_CH')
-
-# COMMAND ----------
-
-from pyspark.sql import functions as F
-
 renamed_sp_dvf = sp_dvf_file.select([F.col(col).alias(col.replace(' ', '_')) for col in sp_dvf_file.columns])
-
-# COMMAND ----------
-
-#from pyspark.sql import functions as F
-#renamed_sp_dvf = sp_dvf_file.select([F.col(col).alias(col.replace(' ', '_')) for col in sp_dvf_file.columns])
-#renamed_sp_dvf.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/dvf_file") 
-#spark.sql("CREATE TABLE IF NOT EXISTS bronze.dvf_file USING DELTA LOCATION '/FileStore/bronze/dvf_file'")
+dot_sp_dvf = renamed_sp_dvf.withColumn('Valeur_fonciere', regexp_replace('Valeur_fonciere', ',', '.').cast("int"))
+dot_sp_dvf = dot_sp_dvf.withColumn('Surface_reelle_bati', dot_sp_dvf['Surface_reelle_bati'].cast("int"))
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM bronze.dvf_file where Commune = 'LEVALLOIS-PERRET'-- ORDER BY `Date mutation` DESC
+# MAGIC DROP TABLE IF EXISTS bronze.dvf_file
 
 # COMMAND ----------
 
-#Create SQL view 
-df.distinct().createOrReplaceTempView('DVF_updates')
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC MERGE INTO bronze.figaro_image
-# MAGIC USING figaro_image_updates
-# MAGIC ON bronze.figaro_image.id=figaro_image_updates.id
-# MAGIC and bronze.figaro_image.imageLink = figaro_image_updates.imageLink
-# MAGIC and bronze.figaro_image.imagePath = figaro_image_updates.imagePath
-# MAGIC WHEN MATCHED THEN
-# MAGIC UPDATE SET *
-# MAGIC WHEN NOT MATCHED THEN INSERT *
+#Create table
+dot_sp_dvf.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/dvf_file") 
+spark.sql("CREATE TABLE IF NOT EXISTS bronze.dvf_file USING DELTA LOCATION '/FileStore/bronze/dvf_file'")
 
 # COMMAND ----------
 
@@ -88,9 +71,7 @@ dbutils.notebook.exit('Success')
 
 # COMMAND ----------
 
-# MAGIC %sql
-# MAGIC SELECT COUNT(`Valeur fonciere`) FROM DVF_updates --where Commune LIKE 'LEVALLOIS%'-- ORDER BY `Date mutation` DESC ;
-
-# COMMAND ----------
-
-display(df)
+## TO DEBUG and explore dataset
+#renamed_sp_dvf.createOrReplaceTempView("DVF_create_table")
+#%sql
+#SELECT md5( CONCAT(Valeur_fonciere,'|',Date_mutation,'|',Surface_reelle_bati)) as DVF_ID, NOW() as CreatedDate, * FROM DVF_create_table where Valeur_fonciere is not  null and Surface_reelle_bati is not null and Type_local = 'Appartement'
