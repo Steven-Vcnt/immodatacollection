@@ -23,11 +23,17 @@ def GetImageFromHtml(Provider, tag, classType):
   
   for link, id in zip(Provider["SourceLink"], Provider["id"]):
     imgeTable_temp=pd.DataFrame()
-    uClient= urlopen(link)
-    page_html= uClient.read()
-    uClient.close()
-    page_soup=BeautifulSoup(page_html, "html")
-    imgs = page_soup.find_all(tag, {'class': classType})
+    try:
+      uClient= urlopen(link)
+      page_html= uClient.read()
+      uClient.close()
+      page_soup=BeautifulSoup(page_html, "html")
+      imgs = page_soup.find_all(tag, {'class': classType})
+    except:
+      imgs=[]
+    else:
+      imgs=[]
+      
     i=0
     imgeDB=[]
     imagePath=[]
@@ -73,6 +79,7 @@ else:
   full_image=GetImageFromHtml(figaro_apt, 'a', 'image-link default-image-background')
   sp_figaroImage=spark.createDataFrame(full_image)
   sp_figaroImage.distinct().createOrReplaceTempView('figaro_image_updates')
+
 
 # COMMAND ----------
 
