@@ -22,6 +22,7 @@ import time
 import lxml
 import bs4.builder._lxml
 import lxml.etree
+from selenium.webdriver.common.by import By
 
 # COMMAND ----------
 
@@ -32,7 +33,8 @@ def bieniciImage(Provider, xpath, attribute):
     imgeTable_temp=pd.DataFrame()
     bienici=jsDriver(link)
     time.sleep(3)
-    src = bienici.find_elements_by_xpath(xpath)
+    src = bienici.find_elements(By.XPATH,xpath)
+    #.find_elements_by_xpath(xpath)
     imgeDB=[]
     imagePath=[]
     i=0
@@ -93,6 +95,11 @@ else:
   bienicitable= bieniciImage(bienici_apt, "//div[@class='w']/img", "src")
   #Create SQL view
   sp_bienicitable=spark.createDataFrame(bienicitable).distinct().createOrReplaceTempView('bienici_image_updates')
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM bienici_image_updates
 
 # COMMAND ----------
 
