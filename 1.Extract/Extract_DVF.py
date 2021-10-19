@@ -66,6 +66,11 @@ spark.sql("CREATE TABLE IF NOT EXISTS bronze.dvf_file USING DELTA LOCATION '/Fil
 
 # COMMAND ----------
 
+# MAGIC %sql
+# MAGIC SELECT * FROM bronze.dvf_file ORDER BY Date_mutation DESC
+
+# COMMAND ----------
+
 #Return a evalue when using dbutils.notebook.run for orchestration
 dbutils.notebook.exit('Success')
 
