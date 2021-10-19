@@ -4,7 +4,6 @@
 # MAGIC sudo apt-get update -y
 # MAGIC sudo apt-get -y dist-upgrade
 # MAGIC sudo apt-get upgrade -y
-# MAGIC sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
 # MAGIC sudo apt-get -f install
 # MAGIC sudo apt autoremove -y
 # MAGIC sudo apt-get install chromium-browser -y
