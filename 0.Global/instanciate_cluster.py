@@ -1,21 +1,36 @@
 # Databricks notebook source
-# MAGIC %sh
-# MAGIC python -m pip install --upgrade pip
-# MAGIC sudo apt-get update -y
-# MAGIC sudo apt-get -y dist-upgrade
-# MAGIC sudo apt-get upgrade -y
-# MAGIC sudo apt-get -f install
-# MAGIC sudo apt autoremove -y
-# MAGIC sudo apt-get install chromium-browser -y
-# MAGIC sudo apt-get install chromium-chromedriver -y
+# MAGIC %md
+# MAGIC ##Debug help
+# MAGIC if packages are missing go to https://debian.pkgs.org/ 
+# MAGIC some bash command:
+# MAGIC sudo apt-get clean <br>
+# MAGIC python -m pip install --upgrade pip <br>
+# MAGIC sudo apt-get update -y <br>
+# MAGIC sudo apt-get -y dist-upgrade <br>
+# MAGIC sudo apt-get upgrade -y <br>
+# MAGIC sudo apt-get -f install <br>
+# MAGIC sudo apt autoremove -y <br>
+# MAGIC apt --fix-broken install
 
 # COMMAND ----------
 
 # MAGIC %sh
+# MAGIC wget http://ftp.de.debian.org/debian/pool/main/f/fonts-liberation/fonts-liberation_1.07.4-11_all.deb
+# MAGIC sudo dpkg -i fonts-liberation_1.07.4-11_all.deb
+# MAGIC wget http://ftp.de.debian.org/debian/pool/main/m/mesa/libgbm1_20.3.5-1_amd64.deb
+# MAGIC sudo dpkg -i libgbm1_20.3.5-1_amd64.deb
+# MAGIC wget http://ftp.de.debian.org/debian/pool/main/n/nspr/libnspr4_4.29-1_amd64.deb
+# MAGIC sudo dpkg -i libnspr4_4.29-1_amd64.deb
+# MAGIC wget http://ftp.de.debian.org/debian/pool/main/n/nss/libnss3_3.61-1+deb11u1_amd64.deb
+# MAGIC sudo dpkg -i libnss3_3.61-1+deb11u1_amd64.deb
+# MAGIC sudo apt-get -f install -y
+
+# COMMAND ----------
+
+# MAGIC %sh 
 # MAGIC wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 # MAGIC sudo dpkg -i google-chrome-stable_current_amd64.deb
 # MAGIC sudo apt-get install -f -y
-# MAGIC sudo dpkg -i google-chrome-stable_current_amd64.deb
 
 # COMMAND ----------
 
