@@ -81,11 +81,14 @@ def getSourceLink(url):
 # COMMAND ----------
 
 # DBTITLE 1,Main
-url='https://www.castorus.com/s/Levallois-perret,38504,-------------------------'
-#Convert Pandas DF to SPark DF, get Castorus Main table and rename column
-sp_MainCastorus=spark.createDataFrame(CastorusMainTable(url).rename(columns = {'vue le':'vue'}, inplace = False))
+url=['https://www.castorus.com/s/Levallois-perret,38504,-------------------------', 'https://www.castorus.com/s/Angers,19447,-------------------------']
+full_main=pd.DataFrame()
+for each in url:
+  #Convert Pandas DF to SPark DF, get Castorus Main table and rename column
+  sp_MainCastorus=pd.DataFrame(CastorusMainTable(each).rename(columns = {'vue le':'vue'}, inplace = False))
+  full_main=full_main.append(sp_MainCastorus)
 #Create SQL view 
-sp_MainCastorus.distinct().createOrReplaceTempView('main_castorus_updates')
+spark.createDataFrame(full_main).distinct().createOrReplaceTempView('main_castorus_updates')
 
 # COMMAND ----------
 
