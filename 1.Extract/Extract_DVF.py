@@ -28,10 +28,10 @@ uClient= urlopen(link)
 page_html= uClient.read()
 uClient.close()
 page_soup=BeautifulSoup(page_html, "html")
-main_file = page_soup.find_all('a', {'class': 'btn-action'})
+main_file = page_soup.find_all('a', {'class': 'fr-btn fr-btn--sm fr-fi-download-line'})
 #dvf_files = main_file.find_all('li', {'class': 'btn-action'})``
 dvf_files=[]
-for i in range(10):
+for i in range(5):
   dvf_links = re.search("(https?:\/\/[^\"]*)", str(main_file[i])).group(0)
   dvf_files.append(dvf_links)
 dvf_files=list(dict.fromkeys(dvf_files))

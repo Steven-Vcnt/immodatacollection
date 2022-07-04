@@ -1,5 +1,5 @@
 # Databricks notebook source
-DVF_table = spark.sql("SELECT DISTINCT md5( CONCAT_WS('|', *)) as DVF_ID, NOW() as CreatedDate, * FROM bronze.dvf_file where Valeur_fonciere is not  null and Surface_reelle_bati is not null and Type_local = 'Appartement' and Valeur_fonciere < 1000000 and  Commune = 'LEVALLOIS-PERRET'")
+DVF_table = spark.sql("SELECT DISTINCT md5( CONCAT_WS('|', *)) as DVF_ID, NOW() as CreatedDate, * FROM bronze.dvf_file where Valeur_fonciere is not  null and Surface_reelle_bati is not null and Type_local = 'Appartement' and Valeur_fonciere < 1000000 and  Commune IN 'LEVALLOIS-PERRET', 'ANGERS'")
 DVF_table.distinct().createOrReplaceTempView('dvf_file_updates')
 
 # COMMAND ----------
