@@ -1,10 +1,10 @@
 # Databricks notebook source
 image_table=spark.sql(''' 
-SELECT * FROM  bronze.figaro_image 
+SELECT DISTINCT * FROM  bronze.figaro_image 
 UNION ALL
-SELECT * FROM bronze.bienici_image
+SELECT DISTINCT * FROM bronze.bienici_image where id !='d102114561'
 UNION ALL
-SELECT * FROM bronze.aval_image
+SELECT DISTINCT * FROM bronze.aval_image
 ''').createOrReplaceTempView('image_table_updates')
 
 # COMMAND ----------
@@ -28,3 +28,8 @@ dbutils.notebook.exit('Success')
 
 #image_table.distinct().write.mode("Overwrite").option("overwriteschema", "true").format("delta").save("/FileStore/silver/image_table") 
 #spark.sql("CREATE TABLE IF NOT EXISTS silver.image_table USING DELTA LOCATION '/FileStore/silver/image_table'")
+
+# COMMAND ----------
+
+#DEBUG %sql
+#DEBUG SELECT id, COUNT(*) FROM image_table_updates GROUP BY id, imageLink, ImagePath ORDER BY COUNT(*) DESC
