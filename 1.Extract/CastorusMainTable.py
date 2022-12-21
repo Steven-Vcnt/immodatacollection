@@ -108,6 +108,7 @@ for each in url:
   #Convert Pandas DF to SPark DF, get Castorus Main table and rename column
   sp_MainCastorus=pd.DataFrame(CastorusMainTable(each, headers).rename(columns = {'vue le':'vue'}, inplace = False))
   full_main=full_main.append(sp_MainCastorus)
+full_main=full_main.drop_duplicates('id')
 #Create SQL view 
 spark.createDataFrame(full_main[full_main['SourceLink'].notnull()]).distinct().createOrReplaceTempView('main_castorus_updates')
 
@@ -117,7 +118,7 @@ spark.createDataFrame(full_main[full_main['SourceLink'].notnull()]).distinct().c
 # MAGIC %sql
 # MAGIC MERGE INTO bronze.main_castorus
 # MAGIC USING main_castorus_updates
-# MAGIC ON bronze.main_castorus.id=main_castorus_updates.id
+# MAGIC ON bronze.main_castorus.id=main_castorus_updates.id AND 
 # MAGIC WHEN MATCHED THEN
 # MAGIC UPDATE SET *
 # MAGIC WHEN NOT MATCHED THEN INSERT *
@@ -132,12 +133,3 @@ dbutils.notebook.exit('Success')
 # DBTITLE 1,Overwrite file & Create delta table
 #sp_MainCastorus.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/main_castorus") 
 #spark.sql("CREATE TABLE IF NOT EXISTS bronze.main_castorus USING DELTA LOCATION '/FileStore/bronze/main_castorus'")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT DISTINCT * FROM bronze.main_castorus
-
-# COMMAND ----------
-
-
