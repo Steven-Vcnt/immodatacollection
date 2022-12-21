@@ -4,11 +4,16 @@ SELECT DISTINCT id, prix, m2, `prix/m2` AS prix_m2,  vue AS castorusUpdateDate, 
 CASE WHEN ville like '%(%' THEN SUBSTRING(REPLACE(ville, ')',''), CHARINDEX('(',ville)+1,LENGTH(ville))ELSE null END AS rue,
 CASE WHEN ville like '%(%' THEN LEFT(ville, CHARINDEX('(',ville)-1) ELSE ville END AS ville,
 DATE_ADD( UpdateDateMainTable, INT(- depuis)) AS CreatedDate, SourceLink, Link
- from bronze.main_castorus ''')
+ from bronze.main_castorus WHERE SourceLink is not null ''')
 
 # COMMAND ----------
 
 main_table.createOrReplaceTempView('main_table_updates')
+
+# COMMAND ----------
+
+# MAGIC %sql
+# MAGIC SELECT * FROM main_table_updates
 
 # COMMAND ----------
 

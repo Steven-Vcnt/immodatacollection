@@ -15,6 +15,7 @@
 # COMMAND ----------
 
 # MAGIC %sh
+# MAGIC sudo apt-get update
 # MAGIC wget http://ftp.de.debian.org/debian/pool/main/f/fonts-liberation/fonts-liberation_1.07.4-11_all.deb
 # MAGIC sudo dpkg -i fonts-liberation_1.07.4-11_all.deb
 # MAGIC wget http://ftp.de.debian.org/debian/pool/main/m/mesa/libgbm1_20.3.5-1_amd64.deb

@@ -31,5 +31,15 @@ dbutils.notebook.exit('Success')
 
 # COMMAND ----------
 
-#DEBUG %sql
-#DEBUG SELECT id, COUNT(*) FROM image_table_updates GROUP BY id, imageLink, ImagePath ORDER BY COUNT(*) DESC
+
+#%sql
+#SELECT id, COUNT(*) FROM image_table_updates GROUP BY id, imageLink, ImagePath ORDER BY COUNT(*) DESC
+
+# COMMAND ----------
+
+#%sql
+#delete FROM bronze.aval_image WHERE id ='d105314719'  AND imagePath='not available' AND UpdateDateImage<'2022-07-02'
+
+# COMMAND ----------
+
+
