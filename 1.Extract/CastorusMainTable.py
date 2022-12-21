@@ -44,7 +44,7 @@ def CastorusMainTable(url, headers):
             #We reconstruct the full URL
             links.append("https://www.castorus.com"+link)
             #Regex to extract the aprtment ID
-            id=re.search("(\w\d+)", link).group(0)
+            id=link.split(',', 1)[1]
             ids.append(id)
             #We reconstruct the redirection link from the id and the function Source Link
             redirect=getSourceLink("https://www.castorus.com/r.php?redirect="+id, headers)
@@ -136,7 +136,7 @@ dbutils.notebook.exit('Success')
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM bronze.main_castorus
+# MAGIC SELECT DISTINCT * FROM bronze.main_castorus
 
 # COMMAND ----------
 
