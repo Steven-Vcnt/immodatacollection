@@ -118,7 +118,7 @@ spark.createDataFrame(full_main[full_main['SourceLink'].notnull()]).distinct().c
 # MAGIC %sql
 # MAGIC MERGE INTO bronze.main_castorus
 # MAGIC USING main_castorus_updates
-# MAGIC ON bronze.main_castorus.id=main_castorus_updates.id AND 
+# MAGIC ON bronze.main_castorus.id=main_castorus_updates.id
 # MAGIC WHEN MATCHED THEN
 # MAGIC UPDATE SET *
 # MAGIC WHEN NOT MATCHED THEN INSERT *
