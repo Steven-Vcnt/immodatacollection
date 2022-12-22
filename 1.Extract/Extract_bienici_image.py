@@ -99,11 +99,6 @@ else:
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM bienici_image_updates
-
-# COMMAND ----------
-
-# MAGIC %sql
 # MAGIC MERGE INTO bronze.bienici_image
 # MAGIC USING bienici_image_updates
 # MAGIC ON bronze.bienici_image.id=bienici_image_updates.id
@@ -112,11 +107,6 @@ else:
 # MAGIC WHEN MATCHED THEN
 # MAGIC UPDATE SET *
 # MAGIC WHEN NOT MATCHED THEN INSERT *
-
-# COMMAND ----------
-
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
 
 # COMMAND ----------
 

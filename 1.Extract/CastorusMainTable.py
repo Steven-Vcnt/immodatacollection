@@ -125,11 +125,6 @@ spark.createDataFrame(full_main[full_main['SourceLink'].notnull()]).distinct().c
 
 # COMMAND ----------
 
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
-
-# COMMAND ----------
-
 # DBTITLE 1,Overwrite file & Create delta table
 #sp_MainCastorus.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/main_castorus") 
 #spark.sql("CREATE TABLE IF NOT EXISTS bronze.main_castorus USING DELTA LOCATION '/FileStore/bronze/main_castorus'")
