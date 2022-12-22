@@ -29,7 +29,6 @@ page_html= uClient.read()
 uClient.close()
 page_soup=BeautifulSoup(page_html, "html")
 main_file = page_soup.find_all('a', {'class': 'fr-btn fr-btn--sm fr-icon-download-line'})
-#dvf_files = main_file.find_all('li', {'class': 'btn-action'})``
 dvf_files=[]
 for i in range(4):
   dvf_links = re.search("(https?:\/\/[^\"]*)", str(main_file[i])).group(0)
@@ -62,17 +61,10 @@ dot_sp_dvf = dot_sp_dvf.withColumn('Surface_reelle_bati', dot_sp_dvf['Surface_re
 
 #Create table
 dot_sp_dvf.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/dvf_file") 
-spark.sql("CREATE TABLE IF NOT EXISTS bronze.dvf_file USING DELTA LOCATION '/FileStore/bronze/dvf_file'")
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC SELECT * FROM bronze.dvf_file ORDER BY Date_mutation DESC
-
-# COMMAND ----------
-
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
+spark.sql("""
+CREATE TABLE IF NOT EXISTS bronze.dvf_file
+USING DELTA LOCATION '/FileStore/bronze/dvf_file'
+""")
 
 # COMMAND ----------
 
