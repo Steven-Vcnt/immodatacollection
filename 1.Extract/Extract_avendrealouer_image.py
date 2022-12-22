@@ -97,10 +97,5 @@ else:
 
 # COMMAND ----------
 
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
-
-# COMMAND ----------
-
 #sp_avalImage.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/avalImage") 
 #spark.sql("CREATE TABLE IF NOT EXISTS bronze.aval_image USING DELTA LOCATION '/FileStore/bronze/avalImage'")

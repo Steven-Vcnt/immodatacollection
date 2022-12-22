@@ -45,8 +45,3 @@
 # MAGIC         && sudo mv chromedriver /usr/local/bin/chromedriver \
 # MAGIC         && sudo chmod +x /usr/local/bin/chromedriver \
 # MAGIC         && chromedriver --version
-
-# COMMAND ----------
-
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')

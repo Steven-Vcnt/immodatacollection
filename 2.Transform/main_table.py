@@ -13,11 +13,6 @@ main_table.createOrReplaceTempView('main_table_updates')
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM main_table_updates
-
-# COMMAND ----------
-
-# MAGIC %sql
 # MAGIC MERGE INTO silver.main_table
 # MAGIC USING main_table_updates
 # MAGIC ON silver.main_table.id=main_table_updates.id

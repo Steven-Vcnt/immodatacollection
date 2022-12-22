@@ -61,10 +61,5 @@ else:
 
 # COMMAND ----------
 
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
-
-# COMMAND ----------
-
 #sp_Castorus.distinct().write.mode("overwrite").option("overwriteschema", "true").format("delta").save("/FileStore/bronze/castorus_change") 
 #spark.sql("CREATE TABLE IF NOT EXISTS bronze.castorus_change USING DELTA LOCATION '/FileStore/bronze/castorus_change'")

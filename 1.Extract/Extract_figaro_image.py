@@ -95,10 +95,5 @@ else:
 
 # COMMAND ----------
 
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
-
-# COMMAND ----------
-
 #sp_figaroImage.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/figaroImage") 
 #spark.sql("CREATE TABLE IF NOT EXISTS bronze.figaro_image USING DELTA LOCATION '/FileStore/bronze/figaroImage'")

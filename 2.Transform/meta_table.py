@@ -18,10 +18,5 @@ meta_table.createOrReplaceTempView('meta_table_updates')
 
 # COMMAND ----------
 
-#Return a evalue when using dbutils.notebook.run for orchestration
-dbutils.notebook.exit('Success')
-
-# COMMAND ----------
-
 #meta_table.distinct().write.mode("Overwrite").option("overwriteschema", "true").format("delta").save("/FileStore/silver/meta_table") 
 #spark.sql("CREATE TABLE IF NOT EXISTS silver.meta_table USING DELTA LOCATION '/FileStore/silver/meta_table'")
