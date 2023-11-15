@@ -28,9 +28,9 @@ uClient= urlopen(link)
 page_html= uClient.read()
 uClient.close()
 page_soup=BeautifulSoup(page_html, "html")
-main_file = page_soup.find_all('a', {'class': 'fr-btn fr-btn--sm fr-icon-download-line'})
+main_file = page_soup.find_all('a', {'class': 'fr-btn fr-btn--sm fr-icon-download-line matomo_download'})
 dvf_files=[]
-for i in range(4):
+for i in range(6):
   dvf_links = re.search("(https?:\/\/[^\"]*)", str(main_file[i])).group(0)
   dvf_files.append(dvf_links)
 dvf_files=list(dict.fromkeys(dvf_files))
@@ -44,6 +44,11 @@ for link in dvf_files:
     pass
   else:
     pass
+
+# COMMAND ----------
+
+urllib.request.urlretrieve(link, "/tmp/dvf_file.txt")
+dbutils.fs.mv("file:/tmp/dvf_file.txt", fileName)
 
 # COMMAND ----------
 
