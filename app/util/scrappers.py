@@ -6,7 +6,6 @@ import lxml
 import os
 import bs4.builder._lxml
 import lxml.etree
-import html5lib
 import re
 from selenium import webdriver
 from bs4 import BeautifulSoup
@@ -14,6 +13,7 @@ from urllib.request import urlopen
 from urllib.error import HTTPError
 from datetime import datetime
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
 pd.options.display.max_colwidth = 1000
 
 
@@ -58,7 +58,7 @@ class GetCastorus:
                         "https://www.castorus.com/r.php?redirect=" + id, headers
                     )
                     redirects.append(redirect)
-                except GetCastorus.notExistantTable:
+                except:
                     pass
         df_table["id"] = ids
         df_table["SourceLink"] = redirects
@@ -83,7 +83,7 @@ class GetCastorus:
                 df_change['id'] = id
                 df_change['UpdateDateChange'] = datetime.now()
                 df_change[0] = df_change[0].astype(str)
-            except GetCastorus.notavailable:
+            except:
                 df_change = pd.DataFrame({0: ['1011999'], 1: ['not available'], 'id': [id], 'UpdateDateChange': [datetime.now()]})
                 ChangeTable = ChangeTable.append(df_change)
                 # Regex to get ID
@@ -112,10 +112,15 @@ class GetCastorus:
             SourceLink = 'Not Found'
             return print(e)
         return SourceLink
-    # Use Chrome Headless Browser
 
+
+class driver:
     def jsDriver(url):
+        '''
+        Use Chrome Headless Browser
+        '''
         user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.114 Safari/537.36"
+        service = Service()
         options = webdriver.ChromeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
@@ -124,35 +129,97 @@ class GetCastorus:
         options.add_experimental_option("excludeSwitches", ["enable-automation"])
         options.add_argument(f"user-agent={user_agent}")
         options.add_experimental_option("useAutomationExtension", False)
-        jsDriver = webdriver.Chrome("chromedriver", options=options)
+        jsDriver = webdriver.Chrome(service=service, options=options)
         jsDriver.get(url)
         return jsDriver
 
 
-class getDVF:
-    def getDvfFiles():
-        link = 'https://www.data.gouv.fr/fr/datasets/demandes-de-valeurs-foncieres/'
-        uClient = urlopen(link)
-        page_html = uClient.read()
-        uClient.close()
-        page_soup = BeautifulSoup(page_html, "html")
-        main_file = page_soup.find_all('a', {'class': 'fr-btn fr-btn--sm fr-icon-download-line matomo_download'})
-        dvf_files = []
-        for i in range(6):
-            dvf_links = re.search("(https?:\/\/[^\"]*)", str(main_file[i])).group(0)
-            dvf_files.append(dvf_links)
-        dvf_files = list(dict.fromkeys(dvf_files))
-        for link in dvf_files:
-            fileId = re.search("(?!(.+)?\/\/?(\?.+)?).*", link).group(0)
-            fileName = os.path.join("dbfs:/FileStore/DVF_file/", fileId, ".txt")
-            try:
-                urllib.request.urlretrieve(link, "/tmp/dvf_file.txt")
-                dbutils.fs.mv("file:/tmp/dvf_file.txt", fileName)
-            except getDVF.noFileAvailable:
-                pass
+class getSource:
+    def bieniciImage(Provider, xpath, attribute):
+        '''
+        get all image for bien ici source
+        '''
+        imageTable = pd.DataFrame()
+        for link, id in zip(Provider["SourceLink"], Provider["id"]):
+            imgeTable_temp = pd.DataFrame()
+            bienici = driver.jsDriver(link)
+            time.sleep(3)
+            src = bienici.find_elements(By.XPATH, xpath)
+            # .find_elements_by_xpath(xpath)
+            imgeDB = []
+            imagePath = []
+            i = 0
+            imageLink = 'not available'
+            imageName = 'not available'
+            for each in src:
+                imageLink = each.get_attribute(attribute)
+                imgeDB.append(imageLink)
+                imageName = "dbfs:/FileStore/images/" + id + "_" + str(i)+".jpg"
+                imagePath.append(imageName)
+                try:
+                    urllib.request.urlretrieve(imageLink, "/tmp/imageTempbi.jpg")
+                    dbutils.fs.mv("file:/tmp/imageTempbi.jpg", imageName)
+                except:
+                    pass
+                else:
+                    pass
+                i = i+1
+            if imageLink == 'not available':
+                imgeDB.append(imageLink)
+                imagePath.append(imageName)
             else:
                 pass
-        urllib.request.urlretrieve(link, "/tmp/dvf_file.txt")
-        dbutils.fs.mv("file:/tmp/dvf_file.txt", fileName)
+            imgeTable_temp['imageLink'] = imgeDB
+            imgeTable_temp['id'] = id
+            imgeTable_temp['imagePath'] = imagePath
+            imageTable = imageTable.append(imgeTable_temp)
+        imageTable['UpdateDateImage'] = datetime.now()
+        return imageTable
 
+    def GetImageFromHtml(Provider, tag, classType):
+        imageTable = pd.DataFrame()
+        # Get Link Image
+        for link, id in zip(Provider["SourceLink"], Provider["id"]):
+            imgeTable_temp = pd.DataFrame()
+            try:
+                uClient = urlopen(link)
+                page_html = uClient.read()
+                uClient.close()
+                page_soup = BeautifulSoup(page_html, "html")
+                imgs = page_soup.find_all(tag, {'class': classType})
+            except:
+                imgs = []
+            else:
+                imgs = []
 
+            i = 0
+            imgeDB = []
+            imagePath = []
+            imageLink = 'not available'
+            imageName = 'not available'
+            # Get all images of apt
+            for each in imgs:
+                imageLink = re.search("(https?:\/\/[^\"]*)", str(each)).group(0)
+                imgeDB.append(imageLink)
+                imageName = "dbfs:/FileStore/images/" + id + "_" + str(i)+".jpg"
+                imagePath.append(imageName)
+                try:
+                    urllib.request.urlretrieve(imageLink, "/tmp/imageTemp.jpg")
+                    dbutils.fs.mv("file:/tmp/imageTemp.jpg", imageName)
+                except:
+                    pass
+                else:
+                    pass
+                i = i+1
+            if imageLink == 'not available':
+                imgeDB.append(imageLink)
+                imagePath.append(imageName)
+            else:
+                pass
+            imgeTable_temp['imageLink'] = imgeDB
+            imgeTable_temp['id'] = id
+            imgeTable_temp['imagePath'] = imagePath
+            imageTable = imageTable.append(imgeTable_temp)
+
+        imageTable['UpdateDateImage'] = datetime.now()
+        return imageTable
