@@ -4,8 +4,6 @@ import urllib.request
 import time
 import lxml
 import os
-import bs4.builder._lxml
-import lxml.etree
 import re
 from selenium import webdriver
 from bs4 import BeautifulSoup
