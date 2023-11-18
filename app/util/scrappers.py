@@ -70,7 +70,7 @@ class GetCastorus:
             try:
                 html_change = pd.read_html(link, attrs={'width': '98%'})
                 # convert from list to DF
-                df_change = pd.concat(html_change)   
+                df_change = pd.concat([html_change, df_change])
                 df_change['link'] = link
                 df_change['id'] = id
                 df_change['UpdateDateChange'] = datetime.now()

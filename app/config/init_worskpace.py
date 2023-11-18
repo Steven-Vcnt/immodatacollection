@@ -86,21 +86,13 @@ if len(castorus) == 0:
     dbutils.notebook.exit('Success')
 else:
     pd_castorus = us.GetCastorus.getChange(castorus)
-    sp_Castorus = spark.createDataFrame(pd_castorus)
+    #sp_Castorus = spark.createDataFrame(pd_castorus)
 
+# COMMAND ----------
 sp_Castorus.distinct().write.mode("overwrite").option("overwriteschema", "true").format("delta").save("/FileStore/bronze/castorus_change") 
 spark.sql("CREATE TABLE IF NOT EXISTS bronze.castorus_change USING DELTA LOCATION '/FileStore/bronze/castorus_change'")
 
 # COMMAND ----------
 
-pd_castorus
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC
-# MAGIC SELECT * FROM bronze.castorus_change
-
-# COMMAND ----------
 
 
