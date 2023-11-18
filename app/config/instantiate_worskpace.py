@@ -1,6 +1,15 @@
+# COMMAND ----------
+import sys
+sys.path.append("../app")
 import util.scrappers as us
 import pandas as pd
 
+# COMMAND ----------
+spark.sql('CREATE DATABASE bronze')
+spark.sql('CREATE DATABASE silver')
+spark.sql('CREATE DATABASE gold')
+
+# COMMAND ----------
 # Main Castorus
 url = [
     "https://www.castorus.com/s/Levallois-perret,38504,-------------------------",
@@ -30,33 +39,29 @@ headers = {
 for each in url:
     # Convert Pandas DF to SPark DF, get Castorus Main table and rename column
     sp_MainCastorus = pd.DataFrame(us.GetCastorus.CastorusMainTable(each, headers).rename(columns={"vue le": "vue"}, inplace=False))
-    full_main = full_main.append(sp_MainCastorus)
+    full_main = pd.concat([full_main, sp_MainCastorus])
+    break
 full_main = full_main.drop_duplicates("id")
 del full_main['Unnamed: 0']
 # Create SQL view
 full_main["depuis"] = full_main["depuis"].astype(str)
 full_main["piec."] = full_main["piec."].astype(str)
 full_main["m2"] = full_main["m2"].astype(str)
+# COMMAND ----------
 spark.createDataFrame(
     full_main[full_main["SourceLink"].notnull()].reset_index(drop=True)
 ).distinct().createOrReplaceTempView("main_castorus_updates")
 
-spark.sql('''
-MERGE INTO bronze.main_castorus USING main_castorus_updates ON bronze.main_castorus.id = main_castorus_updates.id
-WHEN MATCHED THEN
-UPDATE
-SET
-  *
-  WHEN NOT MATCHED THEN
-INSERT
-''')
+sp_MainCastorus.distinct().write.mode("Overwrite").option("OverwriteSchema", "true").format("delta").save("/FileStore/bronze/main_castorus") 
+spark.sql("CREATE TABLE IF NOT EXISTS bronze.main_castorus USING DELTA LOCATION '/FileStore/bronze/main_castorus'")
+
+# COMMAND ----------
 
 # Castorus Change table
 
 castorus = spark.sql('''SELECT Link, mt.id
 FROM silver.main_table mt
-LEFT JOIN silver.meta_table md ON md.id=mt.id
-where (UpdateDateChange is null OR UpdateDateChange < DATE_ADD(NOW(),-7)) ''').limit(1000).toPandas()
+''').limit(1000).toPandas()
 if len(castorus) == 0:
     dbutils.notebook.exit('Success')
 else:
@@ -64,12 +69,5 @@ else:
     sp_Castorus = spark.createDataFrame(pd_castorus)
     sp_Castorus.distinct().createOrReplaceTempView('castorus_change_updates')
 
-spark.sql('''MERGE INTO bronze.castorus_change
-USING castorus_change_updates
-ON bronze.castorus_change.id=castorus_change_updates.id
-and bronze.castorus_change.Date_MDDYYYY = castorus_change_updates.Date_MDDYYYY
-and bronze.castorus_change.changeDescription =castorus_change_updates.changeDescription
-WHEN MATCHED THEN
-UPDATE SET *
-WHEN NOT MATCHED THEN INSERT *
-''')
+sp_Castorus.distinct().write.mode("overwrite").option("overwriteschema", "true").format("delta").save("/FileStore/bronze/castorus_change") 
+spark.sql("CREATE TABLE IF NOT EXISTS bronze.castorus_change USING DELTA LOCATION '/FileStore/bronze/castorus_change'")

@@ -2,9 +2,8 @@ import pandas as pd
 import requests
 import urllib.request
 import time
-import lxml
-import os
 import re
+from io import StringIO
 from selenium import webdriver
 from bs4 import BeautifulSoup
 from urllib.request import urlopen
@@ -24,12 +23,9 @@ class GetCastorus:
         ids = []
         redirects = []
         # read table with the id myTableResult
-        mainCastorus = GetCastorus.jsDriver(url)
+        mainCastorus = driver.jsDriver(url)
         time.sleep(5)
-        Maintable = pd.read_html(mainCastorus.page_source, attrs={"id": "table-result"})
-        # Maintable = pd.read_html(
-        #    requests.get(url, headers=headers).text
-        # )
+        Maintable = pd.read_html(StringIO(mainCastorus.page_source), attrs={"id": "table-result"})
         # convert list to dataframe
         df_table = pd.concat(Maintable)
         # Get URL HTML source page
@@ -41,23 +37,21 @@ class GetCastorus:
         links = []
         # For each row, extract URL link to apartment info
         for tr in table.findAll("tr"):
-            trs = tr.findAll("td")
-            for each in trs:
-                try:
-                    # We extract the URL from A HREF
-                    link = each.find("a")["href"]
-                    # We reconstruct the full URL
-                    links.append("https://www.castorus.com" + link)
-                    # Regex to extract the aprtment ID
-                    id = link.split(",", 1)[1]
-                    ids.append(id)
-                    # We reconstruct the redirection link from the id and the function Source Link
-                    redirect = GetCastorus.getSourceLink(
-                        "https://www.castorus.com/r.php?redirect=" + id, headers
-                    )
-                    redirects.append(redirect)
-                except:
-                    pass
+            if tr.find("a") is None:
+                pass
+            else:
+                # We extract the URL from A HREF
+                link = tr.find("a")["href"]
+                # We reconstruct the full URL
+                links.append("https://www.castorus.com" + link)
+                # Regex to extract the aprtment ID
+                id = link.split(",", 1)[1]
+                ids.append(id)
+                # We reconstruct the redirection link from the id and the function Source Link
+                redirect = GetCastorus.getSourceLink(
+                    "https://www.castorus.com/r.php?redirect=" + id, headers
+                )
+                redirects.append(redirect)
         df_table["id"] = ids
         df_table["SourceLink"] = redirects
         df_table["Link"] = links
@@ -108,6 +102,8 @@ class GetCastorus:
                 SourceLink = re.search('(https?:\/\/[^"]*)', SourceLinkRaw).group(0)
         except AttributeError as e:
             SourceLink = 'Not Found'
+            print(url)
+            print(SourceLinkRaw)
             return print(e)
         return SourceLink
 
